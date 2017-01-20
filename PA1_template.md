@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Background
 
@@ -24,7 +19,8 @@ The following variables are included in the dataset:-
 
 The column classes are specified as numeric (*steps*), character (*date*), and integer (*interval*) as they are read into the data frame and the missing values are specified as "NA". To preprocess the data in preparation for the remaining analyses, the **as.Date** function is used to change the *date* variable from character to date class. 
 
-```{r echo = TRUE}
+
+```r
 zip_file <- "activity.zip"
 activity_data <- read.csv(unzip(zip_file, "activity.csv"), 
                           na.strings = "NA", 
@@ -39,7 +35,8 @@ The below histogram shows the total number of steps taken per day and indicates 
 
 Before creating the histogram, the below code shows how the **aggregate** function was used to calculate the total number of steps taken per day. 
 
-```{r echo = TRUE}
+
+```r
 total_steps_per_day <- aggregate(steps ~ date, 
                                  data = activity_data,
                                  sum)
@@ -51,7 +48,10 @@ hist(total_steps_per_day$steps,
      breaks = 20)
 ```
 
-```{r echo = TRUE}
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+
+```r
 mean_number_steps_per_day <- format(mean(total_steps_per_day$steps), 
                                     digits = 2, 
                                     nsmall = 2)
@@ -61,7 +61,7 @@ median_number_steps_per_day <- format(median(total_steps_per_day$steps),
                                       nsmall = 2)
 ```
 
-The mean number of steps taken per day was `r mean_number_steps_per_day` and the median number of steps taken per day was `r median_number_steps_per_day`. These values are fairly similar, but with a slightly lower median value. This means that there is a very slight positive skew to the distribution of the data.
+The mean number of steps taken per day was 10766.19 and the median number of steps taken per day was 10765.00. These values are fairly similar, but with a slightly lower median value. This means that there is a very slight positive skew to the distribution of the data.
 
 
 ## What is the average daily activity pattern?
@@ -70,7 +70,8 @@ The time series plot below shows the average number of steps taken per 5-minute 
 
 Before creating the time series plot, the below code shows how the **aggregate** function was used to calculate the the average number of steps taken per 5-minute interval. 
 
-```{r echo = TRUE}
+
+```r
 average_steps_per_interval <- aggregate(steps ~ interval, 
                                         data = activity_data, 
                                         mean, 
@@ -83,7 +84,10 @@ plot(average_steps_per_interval$interval, average_steps_per_interval$steps,
      ylab = "Average Number of Steps Taken")
 ```
 
-```{r echo = TRUE}
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+
+```r
 max_average_number_of_steps <- format(max(average_steps_per_interval$steps), 
                                       digits = 2, 
                                       nsmall = 2) 
@@ -93,28 +97,36 @@ interval_with_max_steps <- average_steps_per_interval[which(average_steps_per_in
 interval_with_max_steps <- interval_with_max_steps$interval
 ```
 
-On average, the individual wearing with activity monitoring device took the most steps (`r max_average_number_of_steps`) during the `r interval_with_max_steps`-Minute interval. This is also shown in the time series plot above.  
+On average, the individual wearing with activity monitoring device took the most steps (206.17) during the 835-Minute interval. This is also shown in the time series plot above.  
 
 
 ## Imputing missing values
 
-``` {r echo = TRUE}
+
+```r
 number_of_rows_with_na <- sum(!complete.cases(activity_data))
 ```
 
-Within the *activity_data* dataset, there are `r number_of_rows_with_na` rows of data that are missing data (NA) and the below output shows that all of the missing values are in the *steps* column.    
+Within the *activity_data* dataset, there are 2304 rows of data that are missing data (NA) and the below output shows that all of the missing values are in the *steps* column.    
 
-``` {r echo = TRUE}
+
+```r
 sapply(activity_data, 
        function(x) 
            sum(is.na(x)))
+```
+
+```
+##    steps     date interval 
+##     2304        0        0
 ```
 
 The **na.aggregate** function from the [Zoo package](https://cran.r-project.org/web/packages/zoo/zoo.pdf) is used below to replace the missing step values (NA) with a simple replacement of the average number of steps taken during that 5-minute interval. 
 
 First a new dataset is created (*activity_data_na_replaced*) by subsetting the *date* and *interval* columns from the original *activity_data* dataset. Then a new column is created (*steps*) which contains the steps values from the original dataset with all of the missing values (NA) replaced with the average number of steps for that 5-min interval. 
 
-``` {r echo = TRUE, message = FALSE}
+
+```r
 library("zoo")
 
 activity_data_na_replaced <- activity_data[,2:3]
@@ -127,7 +139,8 @@ The below histogram shows the total number of steps taken per day now that the m
 
 Before creating the histogram, the below code shows how the **aggregate** function was used to calculate the total number of steps taken per day.
 
-```{r echo = TRUE}
+
+```r
 total_steps_per_day_na_replaced <- aggregate(steps ~ date, data = activity_data_na_replaced, sum)
 
 hist(total_steps_per_day_na_replaced$steps, 
@@ -137,7 +150,10 @@ hist(total_steps_per_day_na_replaced$steps,
      breaks = 20)
 ```
 
-```{r echo = TRUE}
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+
+```r
 mean_number_steps_per_day_na_replaced <- format(mean(total_steps_per_day_na_replaced$steps), 
                                                 digits = 2, 
                                                 nsmall = 2)
@@ -147,7 +163,7 @@ median_number_steps_per_day_na_replaced <- format(median(total_steps_per_day_na_
                                                   nsmall = 2)
 ```
 
-The mean number of steps taken per day after missing values have been replaced was `r mean_number_steps_per_day_na_replaced` and the median number of steps taken per day was `r median_number_steps_per_day_na_replaced`. If we compare these values to the mean and median number of steps taken when missing data was still present in the data (`r mean_number_steps_per_day` and `r median_number_steps_per_day`, respectively), we can see that the mean has remained the same and the median has increased and become equal to the mean. 
+The mean number of steps taken per day after missing values have been replaced was 10766.19 and the median number of steps taken per day was 10766.19. If we compare these values to the mean and median number of steps taken when missing data was still present in the data (10766.19 and 10765.00, respectively), we can see that the mean has remained the same and the median has increased and become equal to the mean. 
 
 By imputing the average number of steps taken per 5-min interval in place of missing values, the median has converged with the mean. This has eliminated the slight skew in the distribution and transformed the data to be a symmetrical, normal distribution. 
 
@@ -155,7 +171,8 @@ By imputing the average number of steps taken per 5-min interval in place of mis
 
 Using the *date* column from the *activity_data_na_replaced* dataset and the **weekdays** function, a new variable is created called *day*. This new variable is converted to a factor variable with seven levels (one representing each day of the week). In order to be able to compare weekday and weekend days, the seven levels of the *day* variable are changed into two levels (weekday and weekend) using the **revalue** function from the [plyr package](https://cran.r-project.org/web/packages/plyr/plyr.pdf).  
 
-```{r echo = TRUE, message = FALSE}
+
+```r
 library("plyr")
 
 activity_data_na_replaced$day <- weekdays(activity_data_na_replaced$date)
@@ -168,14 +185,14 @@ activity_data_na_replaced$day <- revalue(activity_data_na_replaced$day,
                                                      "Friday"="weekday",
                                                      "Saturday"="weekend",
                                                      "Sunday"="weekend"))
-
 ```
 
 The below panel plot was created using the [lattice package](https://cran.r-project.org/web/packages/lattice/lattice.pdf) and shows the average number of steps taken per 5-minute interval for weekend and weekday days. As shown by this plot, we can see that the individual wearing the activity monitor took the highest number of steps around the 800-minute interval (approx.) and that the average volume of steps taken was higher during this time period during weekdays. However, the individual tended to be more active between the 1,000 to 2,000 minute intervals at the weekends. Presumably, this may reflect the fact that the individual is at work and therefore be more sedentary in this time period during the weekdays. The fact that the individual is more active during the weekdays between the 500- and 800-minute intervals (approx.) compared to the weekends, is possibly another indication that they are getting up for work. 
 
 Before creating the panel plot, the below code shows how the **aggregate** function was used to calculate the average number of steps taken per 5-minute interval during the weekend and weekday days. 
 
-```{r echo = TRUE}
+
+```r
 average_steps_per_interval_for_each_day_type <- aggregate(steps ~ day + interval, 
                                                           data = activity_data_na_replaced, 
                                                           mean)
@@ -190,4 +207,6 @@ xyplot(steps ~ interval | day,
        xlab = "5-Minute Interval",
        ylab = "Average Number of Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
